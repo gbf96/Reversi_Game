@@ -1,0 +1,10 @@
+package consoleFP
+
+data class LineCommand(val cmdStr: String, val args: List<String>)
+
+fun readCommandOrNull(): LineCommand?{
+    val input = readlnOrNull()?.lowercase()
+    if (input == null || input.isBlank()) return null
+    val parts = input.split(" ")
+    return LineCommand(parts[0], parts.drop(1))
+}
