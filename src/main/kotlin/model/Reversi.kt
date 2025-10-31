@@ -22,7 +22,9 @@ data class Reversi(
     val currentPlayer: PiecesColor,
     val gameState: GameState,
     val pieces: Board
-){
+): Game{
+    override val reversi
+        get() = this
 
     val validTargets: Set<Coordinate>
 
@@ -99,7 +101,7 @@ data class Reversi(
      * @return A new `Reversi` instance representing the updated game state if move
      *         is valid, or `null` if move is invalid.
      */
-    fun play(coordinate: Coordinate): Reversi?{
+    override fun play(coordinate: Coordinate): Reversi?{
         if (coordinate !in this.validTargets) return null
 
         val newBoard = pieces + (coordinate to currentPlayer)
@@ -112,6 +114,20 @@ data class Reversi(
             else -> GameState.Run
         }
         return reversi.copy(gameState = newGameState, currentPlayer = currentPlayer.other())
+    }
+
+    override fun pass(): Reversi? {
+        if (!canPass()) return null
+        return if (gameState is GameState.Pass){
+            this.copy(
+                gameState = result(this.pieces)
+            )
+        }else {
+            this.copy(
+                currentPlayer = this.currentPlayer.other(),
+                gameState = GameState.Pass(this.currentPlayer)
+            )
+        }
     }
 }
 
@@ -257,16 +273,3 @@ fun validateBoardSide(side: Int = BOARD_SIDE) {
     }
 }
 
-fun Reversi.pass(): Reversi?{
-    if (!canPass()) return null
-    return if (gameState is GameState.Pass){
-        this.copy(
-            gameState = Reversi.result(this.pieces)
-        )
-    }else {
-        this.copy(
-            currentPlayer = this.currentPlayer.other(),
-            gameState = GameState.Pass(this.currentPlayer)
-        )
-    }
-}
