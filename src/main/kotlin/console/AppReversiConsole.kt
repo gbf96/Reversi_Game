@@ -1,4 +1,4 @@
-package consoleFP
+package console
 
 import model.Name
 import model.Reversi
@@ -9,14 +9,14 @@ object AppReversiConsole {
     fun run() {
         val st = TextFileStorage<Name, Reversi>("savedGames", GameSerializer)
         var context: CommandContext = CommandContext.Empty
-
+        println("Welcome to Reversi")
         while (true) {
-            print("$ ")
+            print("> ")
             val (cmdStr, args) = readCommandOrNull() ?: continue
             try {
                 context = cmdStr.toCommand(st).execute(context,args)
             }
-            catch (b: CommandException.Unknown){
+            catch (_: CommandException.Unknown){
                 println("Unknown command: $cmdStr")
             }
             catch (i: CommandException.InvalidParameters){

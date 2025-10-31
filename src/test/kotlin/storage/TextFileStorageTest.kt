@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class TextFileStorageTest {
     private val testSerializer = object : Serializer<String> {
@@ -15,7 +16,7 @@ class TextFileStorageTest {
     }
 
     private val fs = FileSystem.SYSTEM
-    private val testDirName = "test/storage"
+    private val testDirName = "src/test/storage"
     private val testDir: Path = testDirName.toPath()
     private val st = TextFileStorage<String, String>(testDirName, testSerializer)
 
@@ -29,8 +30,8 @@ class TextFileStorageTest {
     fun `init creates directory if it does not exist`() {
         cleanupDirectory()
         val storage = TextFileStorage<String, String>(testDirName, testSerializer)
-        kotlin.test.assertTrue(fs.exists(testDir), "Directory should be created by init block")
-        kotlin.test.assertTrue(fs.metadata(testDir).isDirectory, "Path should be a directory")
+        assertTrue(fs.exists(testDir), "Directory should be created by init block")
+        assertTrue(fs.metadata(testDir).isDirectory, "Path should be a directory")
         cleanupDirectory()
     }
 

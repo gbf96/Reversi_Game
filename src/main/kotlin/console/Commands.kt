@@ -1,12 +1,10 @@
-package consoleFP
+package console
 
 import model.Clash
 import model.GameStorage
 import model.Name
 import model.PiecesColor.Companion.toPieceColorOrNull
 import model.Reversi
-import model.pass
-import model.play
 import model.refresh
 import model.toCoordinateOrNull
 import kotlin.system.exitProcess
@@ -18,40 +16,6 @@ class Command(
     val commandHelpMsg: String,
     val execute: (context: CommandContext,args: List<String>) -> CommandContext = {c, _ -> c },
 )
-
-sealed interface CommandContext {
-
-    interface WithGame {
-        val reversi: Reversi
-        val showTargets: Boolean
-
-        fun copyWithNewTargets(newShowTargets: Boolean): CommandContext
-    }
-
-    object Empty : CommandContext
-
-    data class LocalGame(
-        override val reversi: Reversi,
-        override val showTargets: Boolean
-    ) : CommandContext, WithGame {
-
-        override fun copyWithNewTargets(newShowTargets: Boolean): CommandContext {
-            return this.copy(showTargets = newShowTargets)
-        }
-    }
-
-    data class DistributedGame(
-        val clash: Clash,
-        override val showTargets: Boolean
-    ) : CommandContext, WithGame {
-        override val reversi: Reversi
-            get() = clash.reversi
-
-        override fun copyWithNewTargets(newShowTargets: Boolean): CommandContext {
-            return this.copy(showTargets = newShowTargets)
-        }
-    }
-}
 
 fun getAllCommands(str: GameStorage): Map<String, Command> = mapOf(
     "play" to Play,
@@ -85,16 +49,14 @@ private fun join(storage: GameStorage): Command = Command(
     val clashRun = Clash.join(gameName, storage)
 
     val newContext =  CommandContext.DistributedGame(clashRun, false)
-    display(newContext)
-    newContext
+    newContext.also { newContext.show() }
 }
 
 private val refresh = Command("refresh - Updates the game state (in distributed games)."){
     context, _ ->
     if (context is CommandContext.DistributedGame){
         val newContext = context.copy(clash = context.clash.refresh())
-        display(newContext)
-        newContext
+        newContext.also { newContext.show() }
     }else{
         context
     }
@@ -114,14 +76,12 @@ private fun new(storage: GameStorage): Command = Command("new [#|@] <name> - Sta
     if (gameNameStr != null) {
         val clashRun = Clash.start(Name(gameNameStr), storage, firstPlayerColor)
         val newContext = CommandContext.DistributedGame(clashRun, false)
-        display(newContext)
-        newContext
+        newContext.also { newContext.show() }
 
     } else {
         val reversi = Reversi(firstPlayerColor)
         val newContext = CommandContext.LocalGame(reversi, false)
-        display(newContext)
-        newContext
+        newContext.also { newContext.show() }
     }
 }
 
@@ -134,65 +94,44 @@ private fun help(storage: GameStorage) = Command(commandHelpMsg = "help - Shows 
     context
 }
 
-private val Play: Command = Command("play <position> - Plays a move at the specified coordinate.") { context, args ->
+private val Play: Command = Command("play <position> - Plays a move at the specified coordinate.") {
+    context, args ->
+    if (context !is CommandContext.WithGame) {
+        throw CommandException.IllegalContext("No game in progress")
+    }
     val coordinate = when{
         args.size > 1 -> throw CommandException.InvalidParameters(Play)
         args.isNotEmpty() -> args[0].toCoordinateOrNull() ?: throw CommandException.InvalidParameters(Play, "Invalid coordinate")
         else -> throw CommandException.InvalidParameters(Play)
     }
-    when (context) {
-        is CommandContext.LocalGame -> {
-            val newReversi = context.reversi.play(coordinate)
-                ?: throw CommandException.InvalidParameters(Play, "Invalid move")
-            val newContext = context.copy(reversi = newReversi)
-            display(newContext)
-            newContext
-        }
 
-        is CommandContext.DistributedGame -> {
-            val newClashState = context.clash.play(coordinate)
-                ?: throw CommandException.InvalidParameters(Play, "Invalid move")
-            val newContext = context.copy(clash = newClashState)
-            display(newContext)
-            newContext
-        }
-        else -> throw CommandException.IllegalContext("No game in progress")
-    }
+    val newContext = context.play(coordinate)
+    newContext.also { newContext.show() }
 }
 
 
 private val Show = Command("show - Displays the board and current game state."){
     context, _ ->
-
-    display(context)
+    if (context !is CommandContext.WithGame) throw IllegalStateException("No game in progress")
+    if (context is CommandContext.DistributedGame) println("You are player ${context.clash.sidePlayer} in game $context.clash.name}")
+    display(context.reversi, context.showTargets)
     context
 }
 
 private val Pass = Command("pass - Passes the turn to the opponent (only if no moves are available)."){
     context, _ ->
 
-    when (context) {
-        is CommandContext.LocalGame -> {
-            val reversi = context.reversi.pass() ?: throw CommandException.IllegalContext("You can't pass")
-            val newContext = CommandContext.LocalGame(reversi, context.showTargets)
-            display(newContext)
-            newContext
-        }
-
-        is CommandContext.DistributedGame -> {
-            val reversi = context.clash.pass() ?: throw CommandException.IllegalContext("You can't pass")
-            val newContext = CommandContext.DistributedGame(reversi, context.showTargets)
-            display(newContext)
-            newContext
-        }
-        else -> throw CommandException.IllegalContext("Game not started")
+    if (context !is CommandContext.WithGame) {
+        throw CommandException.IllegalContext("No game in progress")
     }
+    val newContext = context.pass()
+    newContext.also { newContext.show() }
 }
 
 
 private val Targets: Command = Command("targets [ON|OFF] - Toggles the display of valid moves. With no argument, shows the current status.") { context, args ->
     if (context !is CommandContext.WithGame) {
-        throw CommandException.IllegalContext("Game not started")
+        throw CommandException.IllegalContext("No game in progress")
     }
 
     val showTargets = when {
@@ -205,7 +144,7 @@ private val Targets: Command = Command("targets [ON|OFF] - Toggles the display o
         args.first() == "off" -> false
         else -> throw CommandException.InvalidParameters(Targets)
     }
+
     val newContext = context.copyWithNewTargets(showTargets)
-    display(newContext)
-    newContext
+    newContext.also { newContext.show() }
 }

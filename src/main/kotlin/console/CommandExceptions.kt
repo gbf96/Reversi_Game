@@ -1,4 +1,4 @@
-package consoleFP
+package console
 
 sealed class CommandException(message: String): Exception(message){
     class InvalidParameters(val command: Command, message: String = ""): CommandException(message)

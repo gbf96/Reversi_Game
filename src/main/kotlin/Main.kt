@@ -1,4 +1,4 @@
-import consoleFP.AppReversiConsole
+import console.AppReversiConsole
 
 fun main() {
     AppReversiConsole.run()

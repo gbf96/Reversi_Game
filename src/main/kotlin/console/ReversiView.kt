@@ -1,4 +1,4 @@
-package consoleFP
+package console
 
 import model.BOARD_SIDE
 import model.Coordinate
@@ -8,7 +8,7 @@ import model.PiecesColor.BLACK
 import model.PiecesColor.WHITE
 import model.Reversi
 import model.countPieces
-import model.validTargets
+import kotlin.text.buildString
 
 /**
  * Displays the current state of the Reversi board.
@@ -18,10 +18,7 @@ import model.validTargets
  * @param game The current instance of the Reversi game to display.
  * @param showTargets A boolean indicating whether to highlight valid target positions.
  */
-fun display(context: CommandContext) {
-    if (context is CommandContext.DistributedGame) println("You are player ${context.clash.sidePlayer} in game ${context.clash.name}")
-    if (context !is CommandContext.WithGame) throw IllegalStateException("Game not started")
-    val game = context.reversi
+fun display(game: Reversi, showTargets: Boolean) {
     val targets = game.validTargets
     val letters = buildString {
         append("  ")
@@ -41,7 +38,7 @@ fun display(context: CommandContext) {
                     WHITE -> pieceColor.symbol
                     null -> '.'
                 }
-                if (context.showTargets && coordinate in targets) c = '*'
+                if (showTargets && coordinate in targets) c = '*'
                 append(" $c ")
             }
         }

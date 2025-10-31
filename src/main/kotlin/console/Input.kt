@@ -1,4 +1,4 @@
-package consoleFP
+package console
 
 data class LineCommand(val cmdStr: String, val args: List<String>)
 
