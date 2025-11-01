@@ -27,6 +27,9 @@ class ReversiTests {
         assertFailsWith <IllegalArgumentException>{
             validateBoardSide(27)
         }
+        assertFailsWith <IllegalArgumentException>{
+            validateBoardSide(3)
+        }
     }
 
     @Test

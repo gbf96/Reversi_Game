@@ -12,7 +12,7 @@ data class Clash(
     override val reversi: Reversi,
     val showTargets: Boolean): Game{
     override fun play(coordinate: Coordinate): Clash? {
-        if (reversi.currentPlayer != this.sidePlayer && !reversi.isGameOver())
+        if (!isMyTurn() && !reversi.isGameOver())
             throw IllegalStateException("It's not your turn!")
 
 
@@ -23,7 +23,7 @@ data class Clash(
     }
 
     override fun pass(): Clash? {
-        if (reversi.currentPlayer != this.sidePlayer && !reversi.isGameOver())
+        if (!isMyTurn() && !reversi.isGameOver())
             throw IllegalStateException("It's not your turn!")
 
         val newReversi = reversi.pass()
@@ -56,6 +56,8 @@ data class Clash(
         }
     }
 }
+
+fun Clash.isMyTurn() = reversi.currentPlayer == this.sidePlayer
 
 fun Clash.refresh(): Clash{
     if (reversi.isGameOver())

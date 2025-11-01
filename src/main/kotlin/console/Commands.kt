@@ -68,8 +68,7 @@ private fun new(storage: GameStorage): Command = Command(
     }
 
     val newContext = CommandContext.GameInProgress(game, false)
-    newContext.show()
-    newContext
+    newContext.also { it.show() }
 }
 
 private fun join(storage: GameStorage): Command = Command(
@@ -79,12 +78,11 @@ private fun join(storage: GameStorage): Command = Command(
 
     val gameName = Name(args[0])
 
-    val game: Game = Clash.join(gameName, storage)
-    println("Joined game '$gameName'. You are ${(game as Clash).sidePlayer}.") //---------------------------------------------------------------------
+    val game= Clash.join(gameName, storage)
 
     val newContext = CommandContext.GameInProgress(game, false)
-    newContext.show()
-    newContext
+
+    newContext.also { it.show() }
 }
 
 
@@ -92,17 +90,19 @@ private val Play: Command = Command("play <position> - Plays a move") { context,
     if (context !is CommandContext.GameInProgress) throw CommandException.IllegalContext("No game in progress")
 
     val coordinate = args.firstOrNull()?.toCoordinateOrNull()
-        ?: throw CommandException.InvalidParameters(Play, "Invalid coordinate")
+        ?: throw CommandException.InvalidParameters(Play, "Invalid coordinate\n")
 
-    val newContext = context.play(coordinate) ?: throw CommandException.InvalidParameters(Play)
-    newContext.also { newContext.show() }
+    val newContext = context.play(coordinate) ?: throw CommandException.InvalidParameters(Play, "Invalid move\n")
+    newContext.also { it.show() }
 }
 
 private val Pass: Command = Command("pass - Passes the turn") { context, _ ->
     if (context !is CommandContext.GameInProgress) throw CommandException.IllegalContext("No game in progress")
 
-    val newContext = context.pass() ?: throw CommandException.InvalidParameters(Pass)
-    newContext.also { newContext.show() }
+    val newContext = context.pass()
+        ?: throw CommandException.IllegalContext("Can't pass, moves are still available")
+
+    newContext.also { it.show() }
 }
 
 private val Refresh: Command = Command("refresh - Updates game state (in distributed games)") { context, _ ->
@@ -111,22 +111,18 @@ private val Refresh: Command = Command("refresh - Updates game state (in distrib
     if (context.game is Clash) {
         val newClash = context.game.refresh()
         val newContext = context.copy(game = newClash)
-        newContext.also { newContext.show() }
+        newContext.also { it.show() }
 
     } else {
         println("Refresh is only available in distributed games.")
-        context.also { context.show() }
+        context.also { it.show() }
     }
 }
 
 private val Show: Command = Command("show - Displays the board") { context, _ ->
     if (context !is CommandContext.GameInProgress) throw CommandException.IllegalContext("No game in progress")
 
-    if (context.game is Clash) {
-        println("(Game: '${context.game.name}', You are: ${context.game.sidePlayer})")
-    }
-
-    context.also { context.show() }
+    context.also { it.show() }
 }
 
 private val Targets: Command = Command("targets [ON|OFF] - Toggles move hints") { context, args ->
@@ -144,5 +140,5 @@ private val Targets: Command = Command("targets [ON|OFF] - Toggles move hints") 
     }
 
     val newContext = context.copy(showTargets = showTargets)
-    newContext.also { newContext.show() }
+    newContext.also { it.show() }
 }

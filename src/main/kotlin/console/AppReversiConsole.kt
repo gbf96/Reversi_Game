@@ -20,7 +20,8 @@ object AppReversiConsole {
                 println("Unknown command: $cmdStr")
             }
             catch (i: CommandException.InvalidParameters){
-                println(i.command.commandHelpMsg)
+                print(i.message)
+                println("Use: " + i.command.commandHelpMsg)
             }
             catch (e: Exception) {
                 println("Error occurred: ${e.message}")

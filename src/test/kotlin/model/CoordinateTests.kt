@@ -33,6 +33,7 @@ class CoordinateTests {
         assertNull("3z".toCoordinateOrNull())
         assertNull("".toCoordinateOrNull())
         assertNull("33".toCoordinateOrNull())
+        assertNull("333a".toCoordinateOrNull())
         assertFailsWith<IllegalArgumentException> {
             "".toCoordinate()
         }
