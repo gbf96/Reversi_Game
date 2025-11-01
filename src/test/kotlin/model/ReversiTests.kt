@@ -17,6 +17,19 @@ class ReversiTests {
     }
 
     @Test
+    fun `invalid board size throws`(){
+        assertFailsWith <IllegalArgumentException>{
+            validateBoardSide(3)
+        }
+        assertFailsWith <IllegalArgumentException>{
+            validateBoardSide(5)
+        }
+        assertFailsWith <IllegalArgumentException>{
+            validateBoardSide(27)
+        }
+    }
+
+    @Test
     fun `initially the Reversi pieces are at the correct positions`() {
         val player = PiecesColor.BLACK
         val sut = Reversi(playerOne = player)
@@ -46,6 +59,10 @@ class ReversiTests {
                 }
             }
         }
+        assertEquals(4,sut.countPieces())
+        assertEquals(2,sut.countPieces(PiecesColor.BLACK))
+        assertEquals(2,sut.countPieces(PiecesColor.WHITE))
+        assertEquals(sut, sut.reversi)
     }
 
     @Test
@@ -278,7 +295,6 @@ class ReversiTests {
         assertEquals(PiecesColor.WHITE, reversi.currentPlayer)
 
         reversi = reversi.pass() ?: error("Valid pass returned null")
-
         assertEquals(reversi.gameState, GameState.Win(PiecesColor.WHITE))
     }
 

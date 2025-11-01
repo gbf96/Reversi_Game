@@ -41,7 +41,7 @@ private val Exit = Command(commandHelpMsg = "exit - Exits the application") { _,
 }
 
 private fun help(storage: GameStorage) = Command(commandHelpMsg = "help - Shows the command list") { context, _ ->
-    println("\nAvailable commands:")
+    println()
     getAllCommands(storage)
         .toSortedMap()
         .forEach { (_, cmd) -> println("- ${cmd.commandHelpMsg}") }

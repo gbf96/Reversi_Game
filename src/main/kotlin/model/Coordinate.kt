@@ -72,3 +72,17 @@ fun String.toCoordinateOrNull(): Coordinate? {
 
     return createCoordinateOrNull(row, col)
 }
+
+fun String.toCoordinate(): Coordinate {
+    if (this.length != 2) throw IllegalArgumentException("Invalid Coordinate")
+
+    val rowChar = this[0]
+    val colChar = this[1].lowercaseChar()
+
+    var row = rowChar.digitToIntOrNull() ?: throw IllegalArgumentException("Invalid Coordinate")
+    row--
+
+    val col = if (colChar in 'a' until 'a' + BOARD_SIDE) colChar - 'a' else throw IllegalArgumentException("Invalid Coordinate")
+
+    return Coordinate(row, col)
+}

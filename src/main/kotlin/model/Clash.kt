@@ -12,9 +12,9 @@ data class Clash(
     override val reversi: Reversi,
     val showTargets: Boolean): Game{
     override fun play(coordinate: Coordinate): Clash? {
-        if (reversi.currentPlayer != this.sidePlayer) {
-            throw IllegalStateException("It's not your turn! Current: ${reversi.currentPlayer}")
-        }
+        if (reversi.currentPlayer != this.sidePlayer && !reversi.isGameOver())
+            throw IllegalStateException("It's not your turn!")
+
 
         val newReversi = reversi.play(coordinate) ?: return null
 
@@ -23,9 +23,8 @@ data class Clash(
     }
 
     override fun pass(): Clash? {
-        if (reversi.currentPlayer != this.sidePlayer) {
-            throw IllegalStateException("It's not your turn! Current: ${reversi.currentPlayer}")
-        }
+        if (reversi.currentPlayer != this.sidePlayer && !reversi.isGameOver())
+            throw IllegalStateException("It's not your turn!")
 
         val newReversi = reversi.pass()
             ?: return null
@@ -36,6 +35,10 @@ data class Clash(
 
     companion object{
         fun start(name: Name, st: GameStorage, color: PiecesColor): Clash {
+            if (st.read(name) != null) {
+                throw IllegalArgumentException("File '$name' already exists.")
+            }
+
             return Clash(st, name, color, Reversi(color), false).also {
                 st.create(name, it.reversi)
             }
@@ -54,6 +57,11 @@ data class Clash(
     }
 }
 
-fun Clash.refresh(): Clash = this.copy(reversi = storage.read(name) ?: throw IllegalStateException("Game file ${name.value} not found!") )
+fun Clash.refresh(): Clash{
+    if (reversi.isGameOver())
+        throw IllegalStateException("Game ${name.value} is over")
+
+    return this.copy(reversi = storage.read(name) ?: throw IllegalStateException("Game file ${name.value} not found!"))
+}
 
 

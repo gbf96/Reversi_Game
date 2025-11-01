@@ -102,8 +102,8 @@ data class Reversi(
      *         is valid, or `null` if move is invalid.
      */
     override fun play(coordinate: Coordinate): Reversi?{
+        if (isGameOver()) throw IllegalStateException("Game is over")
         if (coordinate !in this.validTargets) return null
-
         val newBoard = pieces + (coordinate to currentPlayer)
 
 
@@ -117,7 +117,10 @@ data class Reversi(
     }
 
     override fun pass(): Reversi? {
-        if (!canPass()) return null
+        if (isGameOver())
+            throw IllegalStateException("Game is over")
+        if (!canPass())
+            return null
         return if (gameState is GameState.Pass){
             this.copy(
                 gameState = result(this.pieces)
@@ -223,7 +226,7 @@ fun Reversi.validTargets() = buildSet{
 fun Reversi.flipOpponentPieces(piecePlaced: Coordinate): Reversi{
     var reversi = this
     val playerColor = this[piecePlaced]
-    requireNotNull(playerColor)
+    checkNotNull(playerColor)
     val opponentColor = playerColor.other()
     var foundOpp = false
 
@@ -273,3 +276,4 @@ fun validateBoardSide(side: Int = BOARD_SIDE) {
     }
 }
 
+fun Reversi.isGameOver(): Boolean = gameState is GameState.Win || gameState is GameState.Draw
