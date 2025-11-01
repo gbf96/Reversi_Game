@@ -77,7 +77,6 @@ object GameSerializer : Serializer<Reversi> {
         }
 
         return "$stateLine\n$piecesLine"
-
     }
 
     /**
