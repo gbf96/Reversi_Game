@@ -22,10 +22,10 @@ class CoordinateTests {
     fun `check String to Coordinate`() {
 
         val c1 = "3e".toCoordinateOrNull()
+        "3e".toCoordinate()
         val c2 = "E3".toCoordinateOrNull()
         assertNotNull(c1)
         assertNull(c2)
-
         assertEquals(Coordinate(2, 4), c1)
 
         assertNull("0a".toCoordinateOrNull())
@@ -33,7 +33,22 @@ class CoordinateTests {
         assertNull("3z".toCoordinateOrNull())
         assertNull("".toCoordinateOrNull())
         assertNull("33".toCoordinateOrNull())
-        assertNull("ee".toCoordinateOrNull())
+        assertNull("333a".toCoordinateOrNull())
+        assertFailsWith<IllegalArgumentException> {
+            "".toCoordinate()
+        }
+        assertFailsWith<IllegalArgumentException> {
+            "9a".toCoordinate()
+        }
+        assertFailsWith<IllegalArgumentException> {
+            "E3".toCoordinate()
+        }
+        assertFailsWith<IllegalArgumentException> {
+            "3z".toCoordinate()
+        }
+        assertFailsWith<IllegalArgumentException> {
+            "33".toCoordinate()
+        }
     }
 
     @Test

@@ -59,16 +59,29 @@ fun Coordinate.move(dRow: Int, dColumn: Int): Coordinate? = createCoordinateOrNu
  *
  * @return A `Coordinate` object if the string is a valid board coordinate or `null` if it's invalid.
  */
+
 fun String.toCoordinateOrNull(): Coordinate? {
-    if (this.length != 2) return null
+    if (this.length !in 2..3) return null
 
-    val rowChar = this[0]
-    val colChar = this[1].lowercaseChar()
+    val colChar = this.last().lowercaseChar()
 
-    var row = rowChar.digitToIntOrNull() ?: return null
-    row--
-
-    val col = if (colChar in 'a' until 'a' + BOARD_SIDE) colChar - 'a' else return null
+    val rowStr = this.dropLast(1)
+    val rowNum = rowStr.toIntOrNull() ?: return null
+    if (rowNum !in 1..BOARD_SIDE) {
+        return null
+    }
+    val row = rowNum - 1
+    val col = if (colChar in 'a' until 'a' + BOARD_SIDE) {
+        colChar - 'a'
+    } else {
+        return null
+    }
 
     return createCoordinateOrNull(row, col)
+}
+
+
+fun String.toCoordinate(): Coordinate {
+    return this.toCoordinateOrNull()
+        ?: throw IllegalArgumentException("Invalid coordinate format: '$this'")
 }

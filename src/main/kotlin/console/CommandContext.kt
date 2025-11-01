@@ -1,7 +1,9 @@
 package console
 
+import model.Clash
 import model.Coordinate
 import model.Game
+import model.isMyTurn
 
 sealed interface CommandContext {
     object Empty : CommandContext
@@ -21,6 +23,13 @@ sealed interface CommandContext {
             return this.copy(game = newGame)
         }
 
-        fun show() = display(game.reversi, showTargets)
+        fun show() {
+            if (game is Clash){
+                println("You are player ${game.sidePlayer} in game ${game.name}")
+                display(game.reversi, showTargets && game.isMyTurn())
+            }else {
+                display(game.reversi, showTargets)
+            }
+        }
     }
 }

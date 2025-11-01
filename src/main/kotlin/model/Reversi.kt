@@ -1,7 +1,5 @@
 package model
 
-import kotlin.collections.iterator
-
 const val BOARD_SIDE = 8
 const val BOARD_SIZE = BOARD_SIDE * BOARD_SIDE
 
@@ -48,18 +46,6 @@ data class Reversi(
         }
     )
 
-    companion object{
-        fun result(pieces: Board): GameState {
-            val black = pieces.values.count { it == PiecesColor.BLACK }
-            val white = pieces.values.count { it == PiecesColor.WHITE }
-            return when {
-                black == white -> GameState.Draw
-                black < white  -> GameState.Win(PiecesColor.WHITE)
-                else           -> GameState.Win(PiecesColor.BLACK)
-            }
-        }
-    }
-
     /**
      * Returns the piece color at the given coordinate, or null if the coordinate is empty.
      * @param at The coordinate of the piece to return.
@@ -90,37 +76,48 @@ data class Reversi(
     }
 
     /**
-     * Attempts to play a move at the specified coordinate. If the move is invalid
-     * (the coordinate is not in the set of valid targets), the function returns `null`.
-     * Otherwise, it returns a new `Reversi` game state with the updated board and
-     * current player changed.
+     * Performs a move in the Reversi game by placing a piece at the specified coordinate.
+     * This method ensures that the move is valid, flips the opponent's pieces accordingly,
+     * and updates the game state.
      *
-     * @param coordinate The coordinate where the move will be attempted.
-     * @param validTargets A set of coordinates that are valid targets for the current player.
-     *                     Defaults to the result of the `validTargets` function.
-     * @return A new `Reversi` instance representing the updated game state if move
-     *         is valid, or `null` if move is invalid.
+     * @param coordinate The coordinate where the piece is to be placed.
+     * @return A new instance of the Reversi game with the updated board and game state, or null if the move is invalid.
+     * @throws IllegalStateException If the game is already over.
      */
     override fun play(coordinate: Coordinate): Reversi?{
+        if (isGameOver()) throw IllegalStateException("Game is over")
         if (coordinate !in this.validTargets) return null
 
-        val newBoard = pieces + (coordinate to currentPlayer)
+        val reversiAfterMove = this.copy(
+            pieces = pieces + (coordinate to currentPlayer)
+        ).flipOpponentPieces(coordinate)
 
-
-        var reversi = this.copy(pieces = newBoard)
-        reversi = reversi.flipOpponentPieces(coordinate)
-        val newGameState = when{
-            isBoardFull(reversi.pieces) -> result(reversi.pieces)
+        val newGameState = when {
+            reversiAfterMove.isBoardFull() -> reversiAfterMove.result()
             else -> GameState.Run
         }
-        return reversi.copy(gameState = newGameState, currentPlayer = currentPlayer.other())
+
+        return reversiAfterMove.copy(
+            gameState = newGameState,
+            currentPlayer = currentPlayer.other()
+        )
     }
 
+    /**
+     * Handles the action of passing the turn in the Reversi game.
+     * The current player can pass their turn only if they have no valid moves available.
+     *
+     * @return A new Reversi instance with the updated state after the pass action, or null if passing is not possible.
+     * @throws IllegalStateException If the game is already over.
+     */
     override fun pass(): Reversi? {
-        if (!canPass()) return null
+        if (isGameOver())
+            throw IllegalStateException("Game is over")
+        if (!canPass())
+            return null
         return if (gameState is GameState.Pass){
             this.copy(
-                gameState = result(this.pieces)
+                gameState = result()
             )
         }else {
             this.copy(
@@ -132,8 +129,12 @@ data class Reversi(
 }
 
 
-
-fun isBoardFull(pieces: Board) = pieces.size == BOARD_SIZE
+/**
+ * Checks if the game board is full.
+ *
+ * @return True if the board is full, false otherwise.
+ */
+fun Reversi.isBoardFull() = pieces.size == BOARD_SIZE
 
 /**
  * Counts the number of pieces on the board of the specified color.
@@ -223,7 +224,7 @@ fun Reversi.validTargets() = buildSet{
 fun Reversi.flipOpponentPieces(piecePlaced: Coordinate): Reversi{
     var reversi = this
     val playerColor = this[piecePlaced]
-    requireNotNull(playerColor)
+    checkNotNull(playerColor)
     val opponentColor = playerColor.other()
     var foundOpp = false
 
@@ -272,4 +273,21 @@ fun validateBoardSide(side: Int = BOARD_SIDE) {
         "BOARD_SIDE must be even."
     }
 }
+/**
+ * Determines the game state based on the current number of black and white pieces on the board.
+ *
+ * @return The resulting game state:
+ *         - [GameState.Draw] if the number of black and white pieces are equal.
+ *         - [GameState.Win] with the winning [PiecesColor] if one color has more pieces than the other.
+ */
+fun Reversi.result(): GameState {
+    val black = pieces.values.count { it == PiecesColor.BLACK }
+    val white = pieces.values.count { it == PiecesColor.WHITE }
+    return when {
+        black == white -> GameState.Draw
+        black < white  -> GameState.Win(PiecesColor.WHITE)
+        else           -> GameState.Win(PiecesColor.BLACK)
+    }
+}
 
+fun Reversi.isGameOver(): Boolean = gameState is GameState.Win || gameState is GameState.Draw
