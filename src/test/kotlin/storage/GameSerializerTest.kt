@@ -1,9 +1,7 @@
 package storage
 
 import model.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class GameSerializerTest {
 
@@ -26,7 +24,6 @@ class GameSerializerTest {
         val actualPieces = lines[1].split(' ').filter { it.isNotBlank() }.toSet()
         println(lines[0])
         println(lines[1])
-
 
         assertEquals("Run:0", lines[0], "State line should indicate RUN state for BLACK player")
         assertEquals(expectedPieces, actualPieces, "Pieces line should contain all initial pieces correctly serialized")
@@ -141,5 +138,69 @@ class GameSerializerTest {
 
         assertEquals(GameState.Draw, game.gameState)
         assertEquals(expectedPieces, game.pieces)
+    }
+
+    @Test
+    fun `deserialize with invalid line count throws exception`() {
+        val serializedString = "Draw\n4D:1 4E:0 5D:0 5E:1\n4C:1"
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString)
+        }
+    }
+
+    @Test
+    fun `deserialize a game with a single piece`() {
+        val serializedString = "Run:0\n4D:1"
+        val game = GameSerializer.deserialize(serializedString)
+
+        val expectedPieces = mapOf(
+            Coordinate(3, 3) to PiecesColor.WHITE // 4D
+        )
+
+        assertEquals(GameState.Run, game.gameState)
+        assertEquals(PiecesColor.BLACK, game.currentPlayer)
+        assertEquals(expectedPieces, game.pieces)
+    }
+
+    @Test
+    fun `deserialize fail invalids game state`() {
+        val serializedString1 = "Run\n4D:1 4E:0 5D:0 5E:1"  // Missing player token for game state
+        val serializedString2 = "Run:2\n4D:1 4E:0 5D:0 5E:1" // Invalid player token
+        val serializedString3 = "Draw:1\n4D:1 4E:0 5D:0 5E:1"    // Draw state should not have a player token
+        val serializedString4 = "Stop\n4D:1 4E:0 5D:0 5E:1"    // Unknown game state
+
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString1)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString2)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString3)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString4)
+        }
+    }
+
+    @Test
+    fun `deserialize fail invalids coordinate and color`() {
+        val serializedString1 = "Run:1\nD4:1 4E:0 5D:0 5E:1"    // Invalid coordinate
+        val serializedString2 = "Run:1\n4D:2 4E:0 5D:0 5E:1"    // Invalid color
+        val serializedString3 = "Run:1\n4:1 4E:0 5D:0 5E:1"     // Column empty
+        val serializedString4 = "Run:1\nD:1 4E:0 5D:0 5E:1"     // Row empty
+
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString1)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString2)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString3)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            GameSerializer.deserialize(serializedString4)
+        }
     }
 }
