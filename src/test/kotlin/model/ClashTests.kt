@@ -79,7 +79,7 @@ class ClashTests {
         println(gameAfterOneMove.currentPlayer)
         val clash = Clash.join(gameName, storage)
 
-        assertEquals(playerBlack, clash.sidePlayer) // O P2 (BLACK) junta-se
+        assertEquals(playerBlack, clash.sidePlayer)
         storage.delete(gameName)
     }
 
