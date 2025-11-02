@@ -8,7 +8,7 @@ import model.GameState
 /**
  * Serializer for the [Reversi] game state.
  * This object is responsible for converting a [Reversi] game instance into a string representation
- * and vice-versa.
+ * and vice versa.
  *
  * The serialization format consists of two lines:
  * 1.  **Game State Line**: Describes the current state of the game.
@@ -60,19 +60,19 @@ object GameSerializer : Serializer<Reversi> {
      * 1. A line for the game state (e.g., "Run:0", "Win:1", "Draw").
      * 2. A line for the pieces, with each piece as "Coord:Color" separated by spaces.
      *
-     * @param game The [Reversi] game instance to be serialized.
+     * @param d The [Reversi] game instance to be serialized.
      * @return A string containing the serialized game data, ready to be stored or transmitted.
      */
-    override fun serialize(game: Reversi): String {
-        val playerToken = colorToToken(game.currentPlayer)
-        val stateLine = when (game.gameState) {
+    override fun serialize(d: Reversi): String {
+        val playerToken = colorToToken(d.currentPlayer)
+        val stateLine = when (d.gameState) {
             is GameState.Draw -> "Draw"
             is GameState.Run -> "Run:$playerToken"
             is GameState.Win -> "Win:$playerToken"
             is GameState.Pass -> "Pass:${playerToken}"
         }
 
-        val piecesLine = game.pieces.entries.joinToString(" ") { (coord, color) ->
+        val piecesLine = d.pieces.entries.joinToString(" ") { (coord, color) ->
             "${coordinateToToken(coord)}:${colorToToken(color)}"
         }
 

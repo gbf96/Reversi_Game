@@ -7,14 +7,13 @@ private const val MIN_SIDE = 4
 private const val MAX_SIDE = 26
 
 typealias Board = Map<Coordinate, PiecesColor>
+
 /**
- * Represents the state of a Reversi game.
- * The game state includes the current player and the placement of pieces
- * on the board. This class is immutable; all state updates produce a new instance.
+ * Represents a Reversi game state, including the current player, game state, and pieces on the board.
  *
- * @property currentPlayer The player taking the current turn.
- * @property pieces A map representing the Reversi board. The keys are coordinates,
- *                  and the values are the pieces' colors at those coordinates.
+ * @property currentPlayer The color of the player currently taking their turn.
+ * @property gameState The current state of the game, such as ongoing, a draw, or a win.
+ * @property pieces A mapping of board coordinates to the player pieces currently occupying those coordinates.
  */
 data class Reversi(
     val currentPlayer: PiecesColor,
@@ -55,7 +54,6 @@ data class Reversi(
 
     /**
      * Changes the color of a piece on the board at the given coordinate.
-     * If a piece is present at the given coordinate, its color will be replaced by its opposite.
      *
      * @param coordinate The coordinate of the piece whose color is to be changed.
      * @return A new instance of the Reversi game with the updated state of the board.
@@ -69,16 +67,21 @@ data class Reversi(
         )
     }
 
+    /**
+     * Changes the color of multiple pieces on the Reversi board to the specified color.
+     *
+     * @param coords The set of coordinates of the pieces whose colors are to be changed.
+     * @param color The color to which the pieces at the specified coordinates will be changed.
+     * @return A new instance of the Reversi game with the pieces at the specified coordinates updated to the given color.
+     */
     fun Reversi.changePiecesColorTo(coords: Set<Coordinate>, color: PiecesColor): Reversi {
-        val flipped: Map<Coordinate, PiecesColor> = coords.associateWith { color }//------------------------------
+        val flipped: Map<Coordinate, PiecesColor> = coords.associateWith { color }
         val newPieces = pieces + flipped
         return copy(pieces = newPieces)
     }
 
     /**
      * Performs a move in the Reversi game by placing a piece at the specified coordinate.
-     * This method ensures that the move is valid, flips the opponent's pieces accordingly,
-     * and updates the game state.
      *
      * @param coordinate The coordinate where the piece is to be placed.
      * @return A new instance of the Reversi game with the updated board and game state, or null if the move is invalid.
@@ -221,6 +224,14 @@ fun Reversi.validTargets() = buildSet{
     }
 }
 
+/**
+ * Flips the opponent's pieces on the board when a piece is placed at the specified coordinate.
+ * This method checks all directions from the placed piece, collects opponent's pieces to flip,
+ * and updates the board when a valid line of opponent pieces is found.
+ *
+ * @param piecePlaced The coordinate where the current player's piece is placed.
+ * @return A new instance of the Reversi game with the updated board state after flipping the opponent's pieces.
+ */
 fun Reversi.flipOpponentPieces(piecePlaced: Coordinate): Reversi{
     var reversi = this
     val playerColor = this[piecePlaced]
@@ -290,4 +301,9 @@ fun Reversi.result(): GameState {
     }
 }
 
+/**
+ * Determines if the Reversi game is over based on the current game state.
+ *
+ * @return `true` if the game is over, `false` otherwise.
+ */
 fun Reversi.isGameOver(): Boolean = gameState is GameState.Win || gameState is GameState.Draw

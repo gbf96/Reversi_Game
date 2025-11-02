@@ -12,7 +12,7 @@ import okio.Path.Companion.toPath
 * storable String format (and vice versa) and leverages the Okio library for efficient
 * file manipulation.
 *
-* @param Key The type used to uniquely identify the data entry, used as the filename).
+* @param Key The type used to uniquely identify the data entry, used as the filename.
 * @param Data The type of the object being stored or retrieved.
 * @property baseDirectory The root folder where all data files will be stored.
 * @property serializer The implementation responsible for converting the [Data] object
@@ -62,7 +62,7 @@ class TextFileStorage<Key, Data>(
     *
     * @param data The data object to be serialized and written.
     */
-    private fun Path.writeText(data: Data): Unit{
+    private fun Path.writeText(data: Data){
         parent?.let {
             fs.createDirectories(it)
         }
