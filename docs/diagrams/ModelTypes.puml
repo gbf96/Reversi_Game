@@ -76,33 +76,33 @@ package storage {
     TextFileStorage --> Serializer
 }
 
-console.AppReversiConsole --> model.name
-console.AppReversiConsole --> model.Reversi
-console.AppReversiConsole --> storage.GameSerializer
-console.AppReversiConsole --> storage.TextFileStorage
-console.GameInProgress --> model.Clash
-console.GameInProgress --> model.Coordinate
-console.GameInProgress --> model.Game
-console.GameInProgress --> model.Reversi
-Console.Command --> model.Clash
-Console.Command --> model.Coordinate
-Console.Command --> model.Game
-Console.Command --> model.Name
-Console.Command --> model.PiecesColor
-Console.Command --> model.Reversi
-Console.ReversiView --> model.Coordinate
-Console.ReversiView --> model.GameState
-Console.ReversiView --> model.PiecesColor
-Console.ReversiView --> model.Reversi
+AppReversiConsole --> Name
+AppReversiConsole --> Reversi
+AppReversiConsole --> GameSerializer
+AppReversiConsole --> TextFileStorage
+GameInProgress --> Clash
+GameInProgress --> Coordinate
+GameInProgress --> Game
+GameInProgress --> Reversi
+Command --> Clash
+Command --> Coordinate
+Command --> Game
+Command --> Name
+Command --> PiecesColor
+Command --> Reversi
+ReversiView --> Coordinate
+ReversiView --> GameState
+ReversiView --> PiecesColor
+ReversiView --> Reversi
 
 
-model.Clash --> storage.Storage
-model.Win --> model.PiecesColor
-model.pass --> model.PiecesColor
+Clash --> Storage
+Win --> PiecesColor
+Pass --> PiecesColor
 
-storage.GameSerializer --> model.Coordinate
-storage.GameSerializer --> model.GameState
-storage.GameSerializer --> model.PiecesColor
-storage.GameSerializer --> model.Reversi
+GameSerializer --> Coordinate
+GameSerializer --> GameState
+GameSerializer --> PiecesColor
+GameSerializer --> Reversi
 
 @enduml
