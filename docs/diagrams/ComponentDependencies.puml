@@ -1,0 +1,84 @@
+@startuml
+' https://plantuml.com/component-diagram
+
+package "console" {
+    [AppReversiConsole.kt]
+    [CommandContext.kt]
+    [CommandExceptions.kt]
+    [Commands.kt]
+    [Input.kt]
+    [ReversiView.kt]
+
+    [AppReversiConsole.kt] ..> [CommandContext.kt]
+    [AppReversiConsole.kt] ..> [CommandExceptions.kt]
+    [AppReversiConsole.kt] ..> [Commands.kt]
+    [AppReversiConsole.kt] ..> [Input.kt]
+    [CommandExceptions.kt] ..> [Commands.kt]
+    [Commands.kt] ..> [CommandContext.kt]
+    [Commands.kt] ..> [CommandExceptions.kt]
+}
+
+package "model" {
+    [Clash.kt]
+    [Coordinate.kt]
+    [Direction.kt]
+    [Game.kt]
+    [GameState.kt]
+    [Name.kt]
+    [PiecesColor.kt]
+    [Reversi.kt]
+
+    [Clash.kt] ..> [Coordinate.kt]
+    [Clash.kt] ..> [Game.kt]
+    [Clash.kt] ..> [Name.kt]
+    [Clash.kt] ..> [PiecesColor.kt]
+    [Clash.kt] ..> [Reversi.kt]
+    [Coordinate.kt] ..> [Reversi.kt]
+    [Direction.kt] ..> [Coordinate.kt]
+    [Game.kt] ..> [Coordinate.kt]
+    [Game.kt] ..> [Reversi.kt]
+    [GameState.kt] ..> [PiecesColor.kt]
+    [Reversi.kt] ..> [Coordinate.kt]
+    [Reversi.kt] ..> [Direction.kt]
+    [Reversi.kt] ..> [Game.kt]
+    [Reversi.kt] ..> [GameState.kt]
+    [Reversi.kt] ..> [PiecesColor.kt]
+}
+
+package "storage" {
+    [GameSerializer.kt]
+    [Serializer.kt]
+    [Storage.kt]
+    [TextFileStorage.kt]
+
+    [GameSerializer.kt] ..> [Serializer.kt]
+    [TextFileStorage.kt] ..> [Storage.kt]
+    [TextFileStorage.kt] ..> [Serializer.kt]
+}
+
+[AppReversiConsole.kt] --> [Name.kt]
+[AppReversiConsole.kt] --> [Reversi.kt]
+[AppReversiConsole.kt] --> [GameSerializer.kt]
+[AppReversiConsole.kt] --> [TextFileStorage.kt]
+[CommandContext.kt] --> [Coordinate.kt]
+[CommandContext.kt] --> [Clash.kt]
+[CommandContext.kt] --> [Game.kt]
+[Commands.kt] --> [Coordinate.kt]
+[Commands.kt] --> [Clash.kt]
+[Commands.kt] --> [Game.kt]
+[Commands.kt] --> [Name.kt]
+[Commands.kt] --> [PiecesColor.kt]
+[Commands.kt] --> [Reversi.kt]
+[ReversiView.kt] --> [Coordinate.kt]
+[ReversiView.kt] --> [GameState.kt]
+[ReversiView.kt] --> [PiecesColor.kt]
+[ReversiView.kt] --> [Reversi.kt]
+
+[Clash.kt] --> [Storage.kt]
+
+[GameSerializer.kt] --> [Coordinate.kt]
+[GameSerializer.kt] --> [GameState.kt]
+[GameSerializer.kt] --> [PiecesColor.kt]
+[GameSerializer.kt] --> [Reversi.kt]
+
+@enduml

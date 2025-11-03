@@ -1,0 +1,107 @@
+@startuml
+
+' https://plantuml.com/class-diagram
+
+hide empty members
+
+package console {
+    object AppReversiConsole
+    class Command
+    interface CommandContext
+    class CommandException
+    object Empty
+    class GameInProgress
+    class IllegalContext
+    class Input
+    class InvalidParameters
+    class LineCommand
+    class Unknown
+    class ReversiView
+
+    AppReversiConsole --> Command
+    AppReversiConsole --> CommandContext
+    AppReversiConsole --> CommandException
+    Empty --> CommandContext
+    GameInProgress --> CommandContext
+    IllegalContext --> CommandException
+    InvalidParameters --> CommandException
+    InvalidParameters --> Command
+    Unknown --> CommandException
+    Command --> CommandContext
+    Command --> CommandException
+}
+
+package model {
+    interface Game
+    class Reversi
+    class Clash
+    class Coordinate
+    enum Direction
+    class Name
+    enum PiecesColor
+    abstract class GameState
+    class Win
+    class Draw
+    class Run
+    class Pass
+
+    Clash --> Coordinate
+    Clash --|> Game
+    Clash --> Name
+    Clash --> PiecesColor
+    Clash --> Reversi
+    Game --> Coordinate
+    Game --> Reversi
+    Draw --> GameState
+    Pass --> GameState
+    Run --> GameState
+    Win --> GameState
+    Reversi --> Coordinate
+    Reversi --> Direction
+    Reversi --> Game
+    Reversi --> GameState
+    Reversi --> PiecesColor
+
+}
+
+package storage {
+    interface Storage
+    interface Serializer
+    class TextFileStorage
+    class GameSerializer
+
+    TextFileStorage --|> Storage
+    GameSerializer --|> Serializer
+    TextFileStorage --> Serializer
+}
+
+console.AppReversiConsole --> model.name
+console.AppReversiConsole --> model.Reversi
+console.AppReversiConsole --> storage.GameSerializer
+console.AppReversiConsole --> storage.TextFileStorage
+console.GameInProgress --> model.Clash
+console.GameInProgress --> model.Coordinate
+console.GameInProgress --> model.Game
+console.GameInProgress --> model.Reversi
+Console.Command --> model.Clash
+Console.Command --> model.Coordinate
+Console.Command --> model.Game
+Console.Command --> model.Name
+Console.Command --> model.PiecesColor
+Console.Command --> model.Reversi
+Console.ReversiView --> model.Coordinate
+Console.ReversiView --> model.GameState
+Console.ReversiView --> model.PiecesColor
+Console.ReversiView --> model.Reversi
+
+
+model.Clash --> storage.Storage
+model.Win --> model.PiecesColor
+model.pass --> model.PiecesColor
+
+storage.GameSerializer --> model.Coordinate
+storage.GameSerializer --> model.GameState
+storage.GameSerializer --> model.PiecesColor
+storage.GameSerializer --> model.Reversi
+
+@enduml
