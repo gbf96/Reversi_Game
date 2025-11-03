@@ -242,6 +242,7 @@ class ClashTests {
         assertFailsWith<IllegalStateException>{
             clash.pass()
         }
+
     }
 
     @Test
@@ -263,7 +264,7 @@ class ClashTests {
     fun `refresh fails if the game file does not exist`() {
         val clash = Clash(storage, gameName, playerBlack, Reversi(playerBlack), false)
 
-        assertFailsWith<IllegalStateException> {
+        assertFailsWith< IllegalArgumentException> {
             clash.refresh()
         }
     }
