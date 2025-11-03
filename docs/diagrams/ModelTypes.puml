@@ -12,7 +12,6 @@ package console {
     object Empty
     class GameInProgress
     class IllegalContext
-    class Input
     class InvalidParameters
     class LineCommand
     class Unknown
@@ -22,12 +21,12 @@ package console {
     AppReversiConsole --> LineCommand
     AppReversiConsole --> CommandContext
     AppReversiConsole --> CommandException
-    Empty --> CommandContext
-    GameInProgress --> CommandContext
-    IllegalContext --> CommandException
-    InvalidParameters --> CommandException
+    Empty --|> CommandContext
+    GameInProgress --|> CommandContext
+    IllegalContext --|> CommandException
+    InvalidParameters --|> CommandException
     InvalidParameters --> Command
-    Unknown --> CommandException
+    Unknown --|> CommandException
     Command --> CommandContext
     Command --> CommandException
 }
@@ -40,7 +39,7 @@ package model {
     enum Direction
     class Name
     enum PiecesColor
-    abstract class GameState
+    class GameState
     class Win
     class Draw
     class Run
@@ -53,13 +52,13 @@ package model {
     Clash --> Reversi
     Game --> Coordinate
     Game --> Reversi
-    Draw --> GameState
-    Pass --> GameState
-    Run --> GameState
-    Win --> GameState
+    Draw --|> GameState
+    Pass --|> GameState
+    Run --|> GameState
+    Win --|> GameState
     Reversi --> Coordinate
     Reversi --> Direction
-    Reversi --> Game
+    Reversi --|> Game
     Reversi --> GameState
     Reversi --> PiecesColor
 
