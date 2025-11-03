@@ -19,6 +19,7 @@ package console {
     class ReversiView
 
     AppReversiConsole --> Command
+    AppReversiConsole --> LineCommand
     AppReversiConsole --> CommandContext
     AppReversiConsole --> CommandException
     Empty --> CommandContext
