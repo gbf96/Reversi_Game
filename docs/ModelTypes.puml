@@ -9,7 +9,7 @@ package model {
   enum Direction
   enum PiecesColor
   class Name
-  abstract class GameState
+  class GameState
   class Run
   class Draw
   class Pass
@@ -25,6 +25,7 @@ package model {
 
 
   Reversi --> PiecesColor : currentPlayer
+  Reversi --> PiecesColor : pieces.values
   Reversi --> GameState   : gameState
   Reversi --> Coordinate  : pieces.keys
   Reversi --> Direction
@@ -41,7 +42,7 @@ package storage {
   class TextFileStorage
   class GameSerializer
 
-  TextFileStorage --> Serializer
+  TextFileStorage --> Serializer : serializer
   GameSerializer --> model.Reversi
   GameSerializer --> model.Coordinate
   GameSerializer --> model.PiecesColor
@@ -55,7 +56,7 @@ package console {
   interface CommandContext
   class Empty
   class GameInProgress
-  abstract class CommandException
+  class CommandException
   class InvalidParameters
   class Unknown
   class IllegalContext
@@ -78,11 +79,11 @@ AppReversiConsole --> GameSerializer
 Command --> CommandContext
 Command --> CommandException
 
-GameInProgress --> Game
+GameInProgress --> Game : game
 GameInProgress --> Clash
 GameInProgress --> Reversi
 
-Clash --> Storage
+Clash --> Storage : storage
 
 
 @enduml

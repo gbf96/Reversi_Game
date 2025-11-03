@@ -36,6 +36,8 @@ package "storage" {
 [AppReversiConsole] ..> [Commands]
 [AppReversiConsole] --> [TextFileStorage]
 [AppReversiConsole] --> [GameSerializer]
+[AppReversiConsole] --> [Name]
+
 
 [Commands] ..> [CommandExceptions]
 [Commands] ..> [CommandContext]
@@ -43,10 +45,17 @@ package "storage" {
 [Commands] --> [Reversi]
 [Commands] --> [Clash]
 [Commands] --> [Name]
+[Commands] --> [Game]
+[Commands] --> [Storage]
+[Commands] --> [PiecesColor]
+[Commands] --> [Coordinate]
 [CommandContext] --> [Game]
 [CommandContext] --> [Clash]
-[CommandContext] --> [Reversi]
+[CommandContext] --> [Coordinate]
 [ReversiView] --> [Reversi]
+[ReversiView] --> [Coordinate]
+[ReversiView] --> [PiecesColor]
+[ReversiView] --> [GameState]
 
 [Clash] ..> [Game]
 [Clash] --> [Storage]
