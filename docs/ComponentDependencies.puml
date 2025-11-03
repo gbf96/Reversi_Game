@@ -1,0 +1,81 @@
+@startuml
+' https://plantuml.com/component-diagram
+
+
+
+package "console" {
+  [AppReversiConsole]
+  [Commands]
+  [CommandContext]
+  [Input]
+  [ReversiView]
+  [CommandExceptions]
+}
+
+package "domain" {
+  [Game]
+  [Reversi]
+  [Clash]
+  [Coordinate]
+  [Direction]
+  [GameState]
+  [PiecesColor]
+  [Name]
+}
+
+package "storage" {
+  [Storage]
+  [Serializer]
+  [TextFileStorage]
+  [GameSerializer]
+}
+
+[Main] --> [AppReversiConsole]
+
+[AppReversiConsole] ..> [Input]
+[AppReversiConsole] ..> [Commands]
+[AppReversiConsole] --> [TextFileStorage]
+[AppReversiConsole] --> [GameSerializer]
+[AppReversiConsole] --> [Name]
+
+
+[Commands] ..> [CommandExceptions]
+[Commands] ..> [CommandContext]
+[Commands] ..> [ReversiView]
+[Commands] --> [Reversi]
+[Commands] --> [Clash]
+[Commands] --> [Name]
+[Commands] --> [Game]
+[Commands] --> [Storage]
+[Commands] --> [PiecesColor]
+[Commands] --> [Coordinate]
+[CommandContext] --> [Game]
+[CommandContext] --> [Clash]
+[CommandContext] --> [Coordinate]
+[ReversiView] --> [Reversi]
+[ReversiView] --> [Coordinate]
+[ReversiView] --> [PiecesColor]
+[ReversiView] --> [GameState]
+
+[Clash] ..> [Game]
+[Clash] --> [Storage]
+[Clash] ..> [Reversi]
+[Clash] ..> [Name]
+[Clash] ..> [PiecesColor]
+[Clash] ..> [Coordinate]
+
+[Reversi] ..> [Game]
+[Reversi] ..> [GameState]
+[Reversi] ..> [PiecesColor]
+[Reversi] ..> [Coordinate]
+[Reversi] ..> [Direction]
+
+[TextFileStorage] ..> [Storage]
+[TextFileStorage] ..> [Serializer]
+[GameSerializer] ..> [Serializer]
+[GameSerializer] --> [Reversi]
+[GameSerializer] --> [PiecesColor]
+[GameSerializer] --> [Coordinate]
+[GameSerializer] --> [GameState]
+
+@enduml

@@ -1,0 +1,89 @@
+@startuml
+' https://plantuml.com/class-diagram
+hide empty members
+package model {
+  interface Game
+  class Reversi
+  class Clash
+  class Coordinate
+  enum Direction
+  enum PiecesColor
+  class Name
+  class GameState
+  class Run
+  class Draw
+  class Pass
+  class Win
+
+  Game <|-- Reversi
+  Game <|-- Clash
+
+  GameState <|-- Run
+  GameState <|-- Draw
+  GameState <|-- Pass
+  GameState <|-- Win
+
+
+  Reversi --> PiecesColor : currentPlayer
+  Reversi --> PiecesColor : pieces.values
+  Reversi --> GameState   : gameState
+  Reversi --> Coordinate  : pieces.keys
+  Reversi --> Direction
+
+  Clash --> Reversi     : reversi
+  Clash --> Name        : name
+  Clash --> PiecesColor : sidePlayer
+  Clash --> Coordinate
+}
+
+package storage {
+  interface Storage
+  interface Serializer
+  class TextFileStorage
+  class GameSerializer
+
+  TextFileStorage --> Serializer : serializer
+  GameSerializer --> model.Reversi
+  GameSerializer --> model.Coordinate
+  GameSerializer --> model.PiecesColor
+  GameSerializer --> model.GameState
+  Storage <|-- TextFileStorage
+  Serializer <|-- GameSerializer
+}
+
+package console {
+  class Command
+  interface CommandContext
+  class Empty
+  class GameInProgress
+  class CommandException
+  class InvalidParameters
+  class Unknown
+  class IllegalContext
+  class AppReversiConsole
+  class LineCommand
+
+  CommandContext <|-- Empty
+  CommandContext <|-- GameInProgress
+
+  CommandException <|-- InvalidParameters
+  CommandException <|-- Unknown
+  CommandException <|-- IllegalContext
+}
+
+AppReversiConsole --> Command
+AppReversiConsole --> LineCommand
+AppReversiConsole --> TextFileStorage
+AppReversiConsole --> GameSerializer
+
+Command --> CommandContext
+Command --> CommandException
+
+GameInProgress --> Game : game
+GameInProgress --> Clash
+GameInProgress --> Reversi
+
+Clash --> Storage : storage
+
+
+@enduml

@@ -5,6 +5,9 @@ import model.Reversi
 import storage.GameSerializer
 import storage.TextFileStorage
 
+/**
+ * Entry point for running the Reversi game in a console application.
+ */
 object AppReversiConsole {
     fun run() {
         val st = TextFileStorage<Name, Reversi>("savedGames", GameSerializer)

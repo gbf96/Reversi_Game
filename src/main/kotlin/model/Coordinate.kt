@@ -10,7 +10,7 @@ data class Coordinate private constructor(val row: Int, val column: Int) {
 
     companion object{
         /**
-         * Creates a new zero Coordinate. Validates bounds and throws on invalid input.
+         * Creates a new Coordinate. Validates bounds and throws on invalid input.
          * @param row The zero-based row in 0 until BOARD_SIDE of the coordinate.
          * @param column The zero-based column in 0 until BOARD_SIDEof the coordinate.
          * @return Return a valid coordinate.
@@ -54,9 +54,6 @@ fun Coordinate.move(dRow: Int, dColumn: Int): Coordinate? = createCoordinateOrNu
 
 /**
  * Parses the string to create a `Coordinate` if the string represents a valid board coordinate.
- * A valid board coordinate must be in the format of a single digit followed by a letter,
- * where the digit represents the row and the letter represents the column.
- *
  * @return A `Coordinate` object if the string is a valid board coordinate or `null` if it's invalid.
  */
 
@@ -80,7 +77,12 @@ fun String.toCoordinateOrNull(): Coordinate? {
     return createCoordinateOrNull(row, col)
 }
 
-
+/**
+ * Converts the string to a `Coordinate` if it represents a valid board coordinate.
+ *
+ * @return A `Coordinate` object if the string is a valid board coordinate.
+ * @throws IllegalArgumentException if the string is not in a valid coordinate format.
+ */
 fun String.toCoordinate(): Coordinate {
     return this.toCoordinateOrNull()
         ?: throw IllegalArgumentException("Invalid coordinate format: '$this'")

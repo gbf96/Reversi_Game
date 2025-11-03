@@ -1,8 +1,8 @@
 package model
+
 /**
  * Represents the color of a Reversi player piece that can be either black or white.
  */
-
 enum class PiecesColor(val symbol: Char) {
     BLACK('#'),
     WHITE('@');
@@ -19,17 +19,29 @@ enum class PiecesColor(val symbol: Char) {
      */
     override fun toString(): String = symbol.toString()
 
-    /**
-     * Companion object for the PiecesColor enum, providing utility methods for
-     * interpreting characters and strings as PiecesColor values.
-     *
-     * Creating a map instead of scanning all enum values each time, a character like '#' or '@' needs to be parsed.
-     */
     companion object {
+        /**
+         * A mapping of characters to the corresponding `PiecesColor` enum values.
+         * This allows efficient lookup of `PiecesColor` values based on their character
+         */
         private val bySymbol: Map<Char, PiecesColor> =
             entries.associateBy { it.symbol }
 
+        /**
+         * Converts the character to a `PiecesColor` instance if it matches a valid symbol, or returns null otherwise.
+         *
+         * @return The corresponding `PiecesColor` for the character if it matches a valid symbol,
+         *         or null if the character does not match any `PiecesColor`.
+         */
         fun Char.toPieceColorOrNull(): PiecesColor? = bySymbol[this]
+
+        /**
+         * Converts the string to a `PiecesColor` instance if it represents a valid symbol
+         * or returns null otherwise.
+         *
+         * @return The corresponding `PiecesColor` for the string if it has a single character
+         *         matching a valid symbol (# or @), or null if the string is not a valid representation.
+         */
         fun String.toPieceColorOrNull(): PiecesColor? =
             if (this.length == 1) this[0].toPieceColorOrNull() else null
 
