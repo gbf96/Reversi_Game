@@ -61,7 +61,6 @@ package "storage" {
 [Clash] --> [Storage]
 [Clash] ..> [Reversi]
 [Clash] ..> [Name]
-[Clash] ..> [Game]
 [Clash] ..> [PiecesColor]
 [Clash] ..> [Coordinate]
 
